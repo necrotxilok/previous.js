@@ -25,7 +25,7 @@ cd %appname%
 set version=1.0
 
 echo Downloading version %version%...
-node -e "const fs = require('fs'); const https = require('https'); const file = fs.createWriteStream('tmp.zip'); const request = url => { https.get(url, response => { var body = []; if (response.statusCode == 302) { body = []; request(response.headers.location); } else { var stream = response.pipe(file); stream.on('finish', () => { console.log(' Done!'); }); } }).on('error', () => { process.exit(1); }); }; request('https://github.com/necrotxilok/previous.js/archive/refs/tags/v%version%.zip');"
+powershell -command "Invoke-WebRequest -Uri https://github.com/necrotxilok/previous.js/archive/refs/tags/v%version%.zip -OutFile tmp.zip"
 if errorlevel 1 (
 	echo ERROR: Unable to connect to GitHub Repository to download current version.
 	cd ..
@@ -35,6 +35,12 @@ if errorlevel 1 (
 
 echo Extracting files...
 powershell -command "Expand-Archive tmp.zip"
+if errorlevel 1 (
+	echo ERROR: Unable to extract previous.js files in your app.
+	cd ..
+	rmdir /S /Q %appname%
+	exit /b
+)
 del tmp.zip >nul 2>nul
 
 echo Setting up your project...
