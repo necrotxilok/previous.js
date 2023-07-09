@@ -1,0 +1,98 @@
+
+body {
+	background: #000;
+	color: #fff;
+	font-family: arial;
+	margin: 0;
+}
+
+h1, h2, h3, h4, h5 {
+	margin-top: 0;
+	margin-bottom: 10px;
+}
+
+p {
+	margin: 10px 0;
+}
+
+a {
+	color: #0aa9fb;
+	text-decoration: none;
+}
+
+img {
+	max-width: 100%;
+}
+
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 20px;
+}
+
+section {
+	margin-top: 128px;
+}
+
+.main {
+	padding: 10px;
+}
+
+.box {
+	padding: 30px 40px;
+	position: relative;
+	float: left;
+}
+.box .corners {
+	position: absolute;
+	z-index: -1;
+	top: 0;
+	left: 0;
+	right: 0;	
+	bottom: 0;
+}
+.box .corners > * {
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	border: 0px dashed #777;
+}
+.box .corners .tl {
+	top: -15px;
+	left: -15px;
+	border-bottom-width: 1px;
+	border-right-width: 1px;
+}
+.box .corners .tr {
+	top: -15px;
+	right: -15px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+}
+.box .corners .bl {
+	bottom: -15px;
+	left: -15px;
+	border-top-width: 1px;
+	border-right-width: 1px;
+}
+.box .corners .br {
+	bottom: -15px;
+	right: -15px;
+	border-top-width: 1px;
+	border-left-width: 1px;
+}
+.box .shadow {
+	position: absolute;
+	z-index: -1;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	box-shadow: inset 0 0 50px black, inset 0 0 50px black, inset 0 0 50px black;
+	margin: -15px;
+}
+
+.logo {
+	height: 32px;
+	margin: 15px 0;
+}
