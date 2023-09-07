@@ -6,6 +6,7 @@ const path = require("path");
 const StandardRoutes = require("./routes");
 
 const load = require('./load');
+const read = require('./read');
 
 const iconTypesByExtension = {
 	'.ico':  "image/x-icon",
@@ -23,20 +24,20 @@ const scriptTpl = '<script type="text/javascript" src="[file]"></script>';
 
 class Previous {
 
-	request = null;
-	response = null;
+	method = 'GET';
+	data = {};
 
 	routes = {};
 	pages = {};
 
-	constructor(request, response) {
+	constructor(method, requestData) {
 		const rootLayout = path.join(process.cwd(), 'app/layout.js');
 		if (!fs.existsSync(rootLayout)) {
 			console.error('ERROR: Previous RootLayout does not exists!');
 			return;
 		}
-		this.request = request;
-		this.response = response;
+		this.method = method;
+		this.data = requestData;
 		this.getRoutes('app', '/');
 		if (fs.existsSync(path.join(process.cwd(), 'app/404.js'))) {
 			this.routes['/404'] = {
@@ -55,16 +56,16 @@ class Previous {
 			console.error('ERROR: Previous can not find route in "' + path.join(process.cwd(), current) + '"!');
 			return;
 		}
+		const layoutFile = path.join(current, 'layout.js');
+		if (fs.existsSync(path.join(process.cwd(), layoutFile))) {
+			files.push(layoutFile);
+		}
 		const routeFile = path.join(current, 'route.js');
 		if (fs.existsSync(path.join(process.cwd(), routeFile))) {
 			this.routes[url] = {
 				api: routeFile
 			};
 		} else {
-			const layoutFile = path.join(current, 'layout.js');
-			if (fs.existsSync(path.join(process.cwd(), layoutFile))) {
-				files.push(layoutFile);
-			}
 			const pageFile = path.join(current, 'page.js');
 			if (fs.existsSync(path.join(process.cwd(), pageFile))) {
 				this.routes[url] = {
@@ -78,27 +79,46 @@ class Previous {
 			if (f.isDirectory() && !f.name.startsWith('_')) {
 				const curPath = path.join(current, f.name);
 				const urlPath = url + f.name + '/';
-				this.getRoutes(curPath, urlPath, files);
+				this.getRoutes(curPath, urlPath, [...files]);
 			}
 		}
 	}
 
-	render(uri) {
+	async render(uri, response) {
 		let route = StandardRoutes[uri];
 		if (!route) {
 			route = this.getValidRoute(uri);
 			if (!route) {
-				return false;
+				response(false);
+				return;
 			}
 		}
-		const content = this.renderRoute(uri, route);
-		if (content === false) {
-			return false;
+		const body = await this.renderRoute(uri, route);
+		if (body === false) {
+			response(false);
+			return;
 		}
-		return {
+		if (body && body.error) {
+			response(body);
+			return;
+		}
+		if (body && body.redirect) {
+			response(body);
+			return;
+		}
+		/*if (body && body instanceof Promise) {
+			body.then(function(result) {
+				response({
+					type: result.type,
+					body: result.data
+				})
+			});
+			return;
+		}*/
+		response({
 			type: route.type,
-			content: content
-		};
+			body: body
+		});
 	}
 
 	getValidRoute(uri) {
@@ -153,99 +173,138 @@ class Previous {
 		return true;
 	}
 
-	renderRoute(uri, route) {
-		let content = "";
+	async renderRoute(uri, route) {
+		let currentFile = '';
+		try {
+			let content = "";
 
-		if (route.files) {
+			if (route.files) {
 
-			// Render Page
-			const data = {
-				title: "",
-				icons: {},
-				metadata: {},
-				styles: [],
-				scripts: [],
-				content: "",
-				params: route.params,
-				routes: Object.keys(this.routes)
-			};
+				// Render Page
+				let page = {
+					title: "",
+					icons: {},
+					metadata: {},
+					styles: [],
+					scripts: [],
+					content: "",
+					params: route.params,
+					uri: uri,
+					data: this.data
+				};
 
-			for (let i = route.files.length - 1; i >= 0; i--) {
-				const file = route.files[i];
+				for (let i = route.files.length - 1; i >= 0; i--) {
+					const file = route.files[i];
+					currentFile = file;
 
-				const page = load(file);
-				if (typeof page.type == 'function') {
-					route.type = page.type(data);
+					const view = load(file);
+					if (view.redirect) {
+						return view;
+					}
+
+					if (typeof view.type == 'string') {
+						route.type = view.type;
+					}
+					
+					if (typeof view.data == 'function') {
+						page = {...view.data(page), ...page};
+					}
+					if (typeof view.title == 'function') {
+						page.title = view.title(page);
+					}
+					if (typeof view.icons == 'function') {
+						page.icons = {...view.icons(page), ...page.icons};
+					}
+					if (typeof view.metadata == 'function') {
+						page.metadata = {...view.metadata(page), ...page.metadata};
+					}
+					if (typeof view.styles == 'function') {
+						page.styles = view.styles(page).concat(page.styles).unique();
+					}
+					if (typeof view.scripts == 'function') {
+						page.scripts = view.scripts(page).concat(page.scripts).unique();
+					}
+
+					const htmlFile = file.replace('.js', '.html');
+					if (fs.existsSync(htmlFile)) {
+						content = read(htmlFile, page);
+					} else if (typeof view.content == 'function') {
+						content = view.content(page);
+					}
+
+					if (route.type != "text/html") {
+						break;
+					}
+
+					if (typeof view.ready == 'function') {
+						const ready = view.ready.toString();
+						content += '<script type="text/javascript">\n$(' + ready + ');\n</script>'
+					}
+
+					page.content = content;
 				}
-				if (typeof page.title == 'function') {
-					data.title = page.title(data);
-				}
-				if (typeof page.icons == 'function') {
-					data.icons = {...page.icons(data), ...data.icons};
-				}
-				if (typeof page.metadata == 'function') {
-					data.metadata = {...page.metadata(data), ...data.metadata};
-				}
-				if (typeof page.styles == 'function') {
-					data.styles = page.styles(data).concat(data.styles).unique();
-				}
-				if (typeof page.scripts == 'function') {
-					data.scripts = page.scripts(data).concat(data.scripts).unique();
-				}
-				if (typeof page.content == 'function') {
-					content = page.content({
-						title: data.title,
-						content: data.content,
-						params: data.params
+
+				if (route.type == "text/html") {
+					// Render Document
+					const document = load('previous/server/document.js');
+					page.scripts = ['/previous.js'].concat(page.scripts).unique();
+					content = document.content({
+						title: page.title,
+						icons: this.renderIcons(page.icons),
+						metadata: this.renderMetadata(page.metadata),
+						styles: this.renderStyles(page.styles),
+						scripts: this.renderScripts(page.scripts),
+						content: page.content,
+						params: page.params,
+						uri: uri,
+						data: this.data
 					});
 				}
-				if (typeof page.ready == 'function') {
-					const ready = page.ready.toString();
-					content += '<script type="text/javascript">\n$(' + ready + ');\n</script>'
+
+			} else if (route.api) {
+
+				currentFile = route.api; 
+
+				// Render API
+				const api = load(route.api);
+				const method = this.method;
+				if (typeof api[method] == 'function') {
+					let result = api[method]({
+						params: route.params,
+						uri: uri,
+						data: this.data
+					});
+					if (!result) {
+						throw 'Invalid router response for method ' + method + '.';
+					}
+					if (result.redirect) {
+						return result;
+					}
+					if (result instanceof Promise) {
+						result = await result;
+					}
+					route.type = result.type;
+					content = result.data;
+				} else {
+					content = false;
 				}
 
-				data.content = content;
+			} else if (route.render) {
+
+				// Render Standard Route
+				content = route.render(this);
+			
 			}
 
-			if (route.type == "text/html") {
-				// Render Document
-				const document = load('previous/server/document.js');
-				data.scripts = ['/previous.js'].concat(data.scripts).unique();
-				content = document.content({
-					title: data.title,
-					icons: this.renderIcons(data.icons),
-					metadata: this.renderMetadata(data.metadata),
-					styles: this.renderStyles(data.styles),
-					scripts: this.renderScripts(data.scripts),
-					content: data.content,
-					params: data.params
-				});
-			}
-
-		} else if (route.api) {
-
-			// Render API
-			const api = load(route.api);
-			const method = this.request.method;
-			if (typeof api[method] == 'function') {
-				const result = api[method]({
-					params: route.params,
-					routes: Object.keys(this.routes)
-				});
-				route.type = result.type;
-				content = result.data;
-			} else {
-				content = false;
-			}
-
-		} else if (route.render) {
-
-			// Render Standard Route
-			content = route.render(this);
-		
+			return content;
+		} catch(error) {
+			// Previous App Error
+			console.error('\x1b[31m%s\x1b[0m %s', '[Previous App Error]', error);
+			return {
+				error: error,
+				file: currentFile
+			};
 		}
-
-		return content;
 	}
 
 	renderIcons(icons) {

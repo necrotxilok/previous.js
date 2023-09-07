@@ -2,6 +2,10 @@
 (function() {
 "use strict";
 
+String.prototype.replaceAll = function(search, replace) {
+	return this.split(search).join(replace);
+}
+
 String.prototype._trim = String.prototype.trim; 
 String.prototype.trim = function(char) {
 	if (!char) {
@@ -26,6 +30,20 @@ String.prototype.trim = function(char) {
 	}
 	str = str.substr(start, end - start);
 	return str;
+}
+
+String.prototype.encodeEntities = function() {
+	var buf = [];
+	for (var i=this.length-1;i>=0;i--) {
+		buf.unshift(['&#', this[i].charCodeAt(), ';'].join(''));
+	}
+	return buf.join('');
+}
+
+String.prototype.decodeEntities = function() {
+	return this.replace(/&#(\d+);/g, function(match, dec) {
+		return String.fromCharCode(dec);
+	});
 }
 
 Array.prototype.unique = function() {

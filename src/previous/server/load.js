@@ -1,6 +1,10 @@
 
+require("../common/utils");
+
 const fs = require("fs");
 const path = require("path");
+
+const read = require("./read");
 
 function getJSON(data) {
 	return {
@@ -14,15 +18,10 @@ function load(file) {
 	if (!fs.existsSync(file)) {
 		throw 'Unable to load file "' + file + '".';
 	}
-	last = file;
 	const filePath = path.join(process.cwd(), file);
 	const script = fs.readFileSync(filePath, 'utf8');
-	try {
-		const object = eval('(function() {' + script + '})();');
-		return object;
-	} catch (err) {
-		throw 'An error was found when loading "' + file + '". ' + err;
-	}
+	const object = eval('(function() {' + script + '})();');
+	return object;
 }
 
 module.exports = load;

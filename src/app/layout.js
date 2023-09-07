@@ -1,40 +1,40 @@
 
-const RootLayout = {
-	title: function(data) {
-		if (data.title) {
-			return "Previous - " + data.title;
+return {
+	title: (props) => {
+		if (props.title) {
+			return "Previous.js - " + props.title;
 		}
-		return "Previous";
+		return "Previous.js";
 	},
-	icons: function(data) {
+	icons: (props) => {
 		return {
 			icon: '/favicon.ico'
 		};
 	},
-	metadata: function(data) {
-		return {};
+	metadata: (props) => {
+		return {
+			viewport: "width=device-width, initial-scale=1",
+		};
 	},
-	styles: function(files) {
+	styles: (props) => {
 		return [
 			'/css/style.css'
 		];
 	},
-	scripts: function(files) {
+	scripts: (props) => {
 		return [
 			'/js/app.js'
 		];
 	},
-	content: function(data) {
+	content: (props) => {
 		return `
 		<section>
 			<div class="container">
 				<div class="main">
-					${data.content}
+					${props.content}
 				</div>
 			</div>
 		</section>
 		`;
 	}
 }
-
-return RootLayout;

@@ -9,7 +9,7 @@ if errorlevel 1 (
 
 if [%1]==[] (
 	echo ERROR: You must enter the name of your new previous.js awesome app.
-	echo USAGE: %0 "MyNewAwesomeApp"
+	echo USAGE: %0 MyApp
 	exit /b
 )
 

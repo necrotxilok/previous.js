@@ -1,9 +1,9 @@
 
-const MainPage =  {
-	title: function(data) {
+return {
+	title: (props) => {
 		return "Hello World!!";
 	},
-	content: function(data) {
+	content: (props) => {
 		return `
 			<div class="box">
 				<div class="corners">
@@ -17,7 +17,7 @@ const MainPage =  {
 					<div class="logo">
 						<a href="/"><img src="/img/logo.png"></a>
 					</div>
-					<h1>${data.title}</h1>
+					<h1>${props.title}</h1>
 					<p>Welcome to <a href="https://necrotxilok.github.io/previous-js" target="_blank">previous.js</a>. The "Next" jQuery Framework.</p>
 					<p><small>by <a href="https://necrotxilok.github.io/" target="_blank">necro_txilok</a>.</small></p>
 				</div>
@@ -25,5 +25,3 @@ const MainPage =  {
 		`;
 	}
 }
-
-return MainPage;

@@ -5,20 +5,62 @@
 var links = {};
 var scripts = {};
 
+var last = location.pathname;
+
 previous.router = {
 	routes: {},
 	cache: {},
 	validateRoute: function(uri, callback) {
 		return false;
 	},
-	navigate: function(uri, save = true) {
+	getPath: function(uri) {
+		if (uri.startsWith('#')) {
+			return location.pathname;
+		}
+		if (uri.includes('#')) {
+			return uri.split('#')[0];
+		}
+		return uri;
+	},
+	getHash: function(uri) {
+		var hash = '';
+		if (uri.includes('#')) {
+			hash = uri.split('#')[1];
+		}
+		return hash;
+	},
+	navigate: function(uri, push = true) {
+		// Save Last Path
+		last = this.getPath(uri);
 		var _self = this;
-		return this.validateRoute(uri, function(route, params) {
+		var path = this.getPath(uri);
+		if (push && path == location.pathname) {
+			// Check Hash Update
+			var hash = this.getHash(uri);
+			if (hash) {
+				if ('#' + hash == location.hash) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+			if (!hash && location.hash) {
+				window.history.pushState(null, null, uri);
+			}
+			$('html').scrollTop(0);
+			return true;
+		}
+		return this.validateRoute(path, function(route, params) {
 			var content = _self.cache[route];
 			if (content) {
-				_self.open(uri, content, save);
+				_self.open(uri, content, push);
 			} else {
-				$.get(uri, function(response) {
+				$.get(uri, function(response, status, xhr) {
+					if (xhr.getResponseHeader('content-type') != 'text/html') {
+						window.location = uri;
+						return;
+					}
+
 					response = response.replace('<!DOCTYPE html>', '');
 					response = response.replace(/<link rel="icon".*?>/g, '');
 					response = response.replace('<html>', '<div class="html-tag">').replace('</html>', '</div>');
@@ -30,13 +72,20 @@ previous.router = {
 						_self.cache[route] = response;
 					}
 
-					_self.open(uri, response, save);
+					_self.open(uri, response, push);
+				}).fail(function() {
+					window.location = uri;
 				});
 			}
 			return true;
 		});
 	},
-	open: function(uri, content, save) {
+	open: function(uri, content, push) {
+		// Push History State
+		if (push) {
+			window.history.pushState(null, null, uri);
+		}
+
 		var $virtual = $(content);
 
 		// Set Title
@@ -79,14 +128,24 @@ previous.router = {
 		var $body = $virtual.find('.body-tag');
 		$('body').html($body.html());
 
-		if (save) {
-			window.history.pushState(null, title, uri);
+		// Set Anchor
+		var hash = this.getHash(uri);
+		if (hash) {
+			var $anchor = $('#' + hash);
+			if ($anchor.length) {
+				$('html').scrollTop($anchor.offset().top);
+			}
+		} else if (push) {
+			$('html').scrollTop(0);
 		}
 	}
 };
 
 window.onpopstate = function() {
-	var uri = location.pathname;
+	if (location.pathname == last) {
+		return true;
+	}
+	var uri = location.pathname + location.hash;
 	previous.router.navigate(uri, false);
 }
 

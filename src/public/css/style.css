@@ -96,3 +96,23 @@ section {
 	height: 32px;
 	margin: 15px 0;
 }
+
+
+@media (max-width: 480px) or (max-height: 480px) {
+	section {
+		margin-top: 0;
+	}
+	.main {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+	}
+	.box {
+		float: none;
+	}
+}
