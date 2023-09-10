@@ -56,7 +56,8 @@ previous.router = {
 				_self.open(uri, content, push);
 			} else {
 				$.get(uri, function(response, status, xhr) {
-					if (xhr.getResponseHeader('content-type') != 'text/html') {
+					var contentType = xhr.getResponseHeader('content-type');
+					if (!contentType || !contentType.includes('text/html')) {
 						window.location = uri;
 						return;
 					}
