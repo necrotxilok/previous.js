@@ -48,8 +48,8 @@ String.prototype.decodeEntities = function() {
 
 Array.prototype.unique = function() {
 	return this.filter(function(value, index, self) { 
-	    return self.indexOf(value) === index;
-	});	
+		return self.indexOf(value) === index;
+	});
 }
 
 Date.prototype.getFullDateString = function() {
