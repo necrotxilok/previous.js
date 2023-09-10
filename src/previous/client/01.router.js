@@ -51,7 +51,7 @@ previous.router = {
 			return true;
 		}
 		return this.validateRoute(path, function(route, params) {
-			var content = _self.cache[route];
+			var content = _self.cache[last];
 			if (content) {
 				_self.open(uri, content, push);
 			} else {
@@ -69,9 +69,7 @@ previous.router = {
 					response = response.replace('<body>', '<div class="body-tag">').replace('</body>', '</div>');
 					response = response.trim();
 					
-					if (!Object.values(params).length) {
-						_self.cache[route] = response;
-					}
+					_self.cache[last] = response;
 
 					_self.open(uri, response, push);
 				}).fail(function() {
