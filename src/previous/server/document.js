@@ -1,14 +1,14 @@
 
 const Document = {
-	title: (props) => {
+	title: function(props) {
 		return "Previous.js";
 	},
-	icons: (props) => {
+	icons: function(props) {
 		return {
 			//icon: '/favicon.ico'
 		};
 	},
-	metadata: (props) => {
+	metadata: function(props) {
 		return {
 			//description: "",
 			//keywords: "Previous.js,jQuery,JavaScript",
@@ -23,17 +23,17 @@ const Document = {
 			//"prop:og:title": "Previous.js"
 		};
 	},
-	styles: (props) => {
+	styles: function(props) {
 		return [
 			//'/css/style.css'
 		];
 	},
-	scripts: (props) => {
+	scripts: function(props) {
 		return [
 			//'/js/app.js'
 		];
 	},
-	content: (props) => {
+	content: function(props) {
 		return `<!DOCTYPE html>
 <html>
 <head>

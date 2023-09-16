@@ -30,7 +30,7 @@ const extendRouter = function(previous) {
 	return `
 (function() {
 "use strict";
-previous.router.routes = ${JSON.stringify(previous.pages)}
+previous.router.routes = ${JSON.stringify(previous.pages)};
 previous.router.validateRoute = ${previous.validateRoute.toString().replace('validateRoute', 'function')}
 })();
 `;
