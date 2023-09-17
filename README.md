@@ -2,7 +2,7 @@
 The jQuery Framework.
 
 > **Disclaimer!**
-> This project is a "meme" made for entertainment and educational purposes. Any similarity of this project with Next.js is purely a coincidence. Do not use it in production environments. But if you finally want to use it, do it at your own risk.
+> This project is a "meme" made for entertainment and educational purposes. Any similarity of this project with Next.js is purely a coincidence. Do not use it in production environments.
 
 Previous.js allows you to create full-stack web applications with all jQuery features on the client through a Node.js server and a simple routing system.
 
@@ -22,6 +22,6 @@ Previous.js is used by none of the world's leading companies, but you can see aw
 
 ## About the author
 
-Hi, I'm necro_txilok. This project was made with love to demostrate the real power of HTML5 without using top trending technologies like React, Angular, VUE and many others which sometimes try to convince web developers they are the only way to create awesome websites or web applications.
+Hi, I'm necro_txilok. This project was made with love to demostrate the real power of HTML5 without using top trending technologies like React, Angular, Vue and many others which sometimes try to convince web developers they are the only way to create awesome websites or web applications.
 
 You can visit other of my GitHub projects [here](https://necrotxilok.github.io/).
