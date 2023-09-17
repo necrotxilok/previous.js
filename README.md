@@ -14,11 +14,11 @@ Visit [The Official Website](https://necrotxilok.github.io/previous-js/) to get 
 
 ## Documentation
 
-Visit [The Official Documentation](https://necrotxilok.github.io/previous-js/docs/intro/) to learn how to create a beautiful website, a powerfull web app or a fantastic content API of your dreams writting simple JS and HTML files.
+Visit [The Official Documentation](https://necrotxilok.github.io/previous-js/docs/) to learn how to create a beautiful website, a powerfull web app or a fantastic content API of your dreams writting simple JS and HTML files.
 
 ## Who is using Previous.js?
 
-Previous.js is used by none of the world's leading companies, but you can see awesome examples in [Previous.js Showcase](https://necrotxilok.github.io/previous-js/showcase/) to get inspiration for your next projects.
+Previous.js is used by none of the world's leading companies, but you can see a lot of awesome examples in [Previous.js Showcase](https://necrotxilok.github.io/previous-js/showcase/) to get inspiration for your next projects.
 
 ## About the author
 
