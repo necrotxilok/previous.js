@@ -1,4 +1,4 @@
-![Previous.js Logo](/img/previous_banner.png)
+[![Previous.js Logo](/img/previous_banner.png)](https://necrotxilok.github.io/previous-js/)
 
 # Previous.js
 The jQuery Framework.
