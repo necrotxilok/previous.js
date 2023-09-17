@@ -1,4 +1,4 @@
-![Previous.js Logo](/img/previous_logo.png)
+![Previous.js Logo](/img/previous_banner.png)
 
 # Previous.js
 The jQuery Framework.
