@@ -1,14 +1,15 @@
 [![Previous.js Logo](/img/previous_banner.png)](https://necrotxilok.github.io/previous-js/)
 
 # Previous.js
-The jQuery Framework.
 
-> **Disclaimer!**
-> This project is a "meme" made for entertainment and educational purposes. Any similarity of this project with Next.js is purely a coincidence. Do not use it in production environments.
+**The jQuery Framework.**
 
 Previous.js allows you to create full-stack web applications with all jQuery features on the client through a Node.js server and a simple routing system.
 
 It also provides a lightning-fast build system for generating static websites.
+
+> **Disclaimer!**
+> This project is a "meme" made for educational and entertainment purposes. Any similarity of this project to Next.js is purely coincidental. Do not use it in production environments.
 
 ## Getting Started
 
